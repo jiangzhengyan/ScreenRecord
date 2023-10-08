@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, ScreenRecordService.class);
                 intent.putExtra("resultCode", resultCode);
                 intent.putExtra("resultData", data);
-                intent.putExtra("mScreenWidth", mScreenWidth+1);
-                intent.putExtra("mScreenHeight", mScreenHeight+1);
+                intent.putExtra("mScreenWidth", mScreenWidth % 2 == 0 ? mScreenWidth : mScreenWidth + 1);
+                intent.putExtra("mScreenHeight", mScreenHeight % 2 == 0 ? mScreenHeight : mScreenHeight + 1);
                 intent.putExtra("mScreenDensity", mScreenDensity);
                 startForegroundService(intent);
                 Toast.makeText(this, "录屏开始", Toast.LENGTH_SHORT).show();
