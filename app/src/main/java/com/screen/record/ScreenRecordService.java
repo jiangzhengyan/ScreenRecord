@@ -1,5 +1,6 @@
 package com.screen.record;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -17,10 +18,10 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 
-import androidx.annotation.Nullable;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import androidx.annotation.Nullable;
 
 
 public class ScreenRecordService extends Service {
@@ -36,13 +37,24 @@ public class ScreenRecordService extends Service {
     private int mScreenHeight;
     private int mScreenDensity;
 
-    private Context context = null;
 
-    public static void start(Context context) {
+    public static void start(Context context, int resultCode, Intent data) {
+
+        int mScreenWidth = PhoneHelper.getScreenWidthReal(context);
+        int mScreenHeight = PhoneHelper.getScreenHeightReal(context);
+        int mScreenDensity = PhoneHelper.getDensityDpi(context);
+        //获得录屏权限，启动Service进行录制
+        Intent intent = new Intent(context, ScreenRecordService.class);
+        intent.putExtra("resultCode", resultCode);
+        intent.putExtra("resultData", data);
+        intent.putExtra("mScreenWidth", mScreenWidth % 2 == 0 ? mScreenWidth : mScreenWidth + 1);
+        intent.putExtra("mScreenHeight", mScreenHeight % 2 == 0 ? mScreenHeight : mScreenHeight + 1);
+        intent.putExtra("mScreenDensity", mScreenDensity);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(new Intent(context, ScreenRecordService.class));
+            context.startForegroundService(intent);
         } else {
-            context.startService(new Intent(context, ScreenRecordService.class));
+            context.startService(intent);
         }
     }
 
@@ -182,6 +194,23 @@ public class ScreenRecordService extends Service {
          */
         return mediaProjection.createVirtualDisplay("mediaProjection", mScreenWidth, mScreenHeight, mScreenDensity,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mediaRecorder.getSurface(), null, null);
+    }
+
+    //start screen record
+    public static void startScreenRecord(Activity activity) {
+        //Manages the retrieval of certain types of MediaProjection tokens.
+        MediaProjectionManager mediaProjectionManager =
+                (MediaProjectionManager) activity.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        //Returns an Intent that must passed to startActivityForResult() in order to start screen capture.
+        Intent permissionIntent = mediaProjectionManager.createScreenCaptureIntent();
+        activity.startActivityForResult(permissionIntent, 1000);
+
+    }
+
+    //stop screen record.
+    public static void stopScreenRecord(Context activity) {
+        Intent service = new Intent(activity, ScreenRecordService.class);
+        activity.stopService(service);
     }
 
     @Override
