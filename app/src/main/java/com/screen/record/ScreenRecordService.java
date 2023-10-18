@@ -159,13 +159,13 @@ public class ScreenRecordService extends Service {
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         //Sets the video encoding bit rate for recording.
         //param:the video encoding bit rate in bits per second.
-        mediaRecorder.setVideoEncodingBitRate(5 * mScreenWidth * mScreenHeight);
+        mediaRecorder.setVideoEncodingBitRate(2 * mScreenWidth * mScreenHeight);
         //Sets the video encoder to be used for recording.
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         //Sets the width and height of the video to be captured.
         mediaRecorder.setVideoSize(mScreenWidth, mScreenHeight);
         //Sets the frame rate of the video to be captured.
-        mediaRecorder.setVideoFrameRate(60);
+        mediaRecorder.setVideoFrameRate(80);
         try {
             //Pass in the file object to be written.
             mediaRecorder.setOutputFile(filePathName);
